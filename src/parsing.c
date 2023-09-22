@@ -30,23 +30,29 @@ int	init_philos(t_data *data, t_philo **philos)
 {
 	int	i;
 
+	t_philo	*philos;
 	i = 0;
-	*philos = malloc(data->nb_philo * sizeof (**philos));
-	if (!*philos)
-		return (1);		//erreur malloc
+	philos = malloc(data->nb_philo * sizeof (**philos));
+	if (!philos)
+		return (NULL);		//erreur malloc
 	while (i < data->nb_philo)
 	{
-		(*philos)[i].time_to_die = data->time_to_die;
-		(*philos)[i].time_to_eat = data->time_to_eat;
-		(*philos)[i].time_to_sleep = data->time_to_sleep;
-		(*philos)[i].nb_meal = data->nb_meal;
-		(*philos)[i].id = i + 1;
-		(*philos)[i].philo_died = &(data->philo_died);
-		(*philos)[i].rfork = data->fork[i];
+		philos[i].id = i + 1;
+		philos[i].time_to_die = data->time_to_die;
+		philos[i].time_to_eat = data->time_to_eat;
+		philos[i].time_to_sleep = data->time_to_sleep;
+		philos[i].nb_meal = data->nb_meal;
+		philos[i].philo_died = &(data->philo_died);
+		philos[i].fork = &data->fork[i];
 		if (!i)
-			(*philos)[i].lfork = data->fork[data->nb_philo - 1];
+			philos[i].fork_next = &data->fork[data->nb_philo - 1];
 		else
-			(*philo)[i].lfork = data->fork[i - 1];
+			philo[i].fork_next = &data->fork[i - 1];
+		philos[i].write_m = &(data->write_m);
+		philos[i].dead_m = &(data->dead_m);
+		philos[i].start_time = get_time();
+		philos[i].last_meal = get_time();
+		
 		i++;
 	}
 	return (0);
