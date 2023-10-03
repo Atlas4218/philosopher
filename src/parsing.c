@@ -6,91 +6,85 @@
 /*   By: rastie <rastie@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 17:46:52 by rastie            #+#    #+#             */
-/*   Updated: 2023/09/22 04:00:02 by rastie           ###   ########.fr       */
+/*   Updated: 2023/10/03 19:49:21 by rastie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "philo.h"
 
-int	parse(int ac, char **av)
+void	select_fork(t_philo *philo)
 {
-	long	arg;
-
-	if (atol(*av) > 200)
-		return (1);
-	while (*av)
+	if (philo->id % 2)
 	{
-		if (!isnum(*av))
-			return (2);
-		arg = atol(*(av++));
-		if (arg < 0 || arg > INT_MAX)
-			return (1);
+		philo->first_fork = philo->left_fork;
+		philo->second_fork = philo->right_fork;
 	}
-	return (0);
+	else
+	{
+		philo->first_fork = philo->left_fork;
+		philo->second_fork = philo->right_fork;
+	}
 }
-int	init_philos(t_data *data, t_philo **philos)
-{
-	int	i;
 
+void	get_input(t_philo *philo, char **av)
+{
+	philo->time_to_die = (int)ft_atol(av[1]);
+	philo->time_to_eat = (int)ft_atol(av[2]);
+	philo->time_to_sleep = (int)ft_atol(av[3]);
+	philo->nb_meal = -1;
+	if (av[4])
+		philo->nb_meal = (int)ft_atol(av[4]);
+}
+
+t_philo	*init_philos(t_data *data, char **av)
+{
+	int		i;
 	t_philo	*philos;
+
 	i = 0;
-	philos = malloc(data->nb_philo * sizeof (**philos));
+	philos = malloc(data->nb_philo * sizeof (*philos));
 	if (!philos)
-		return (NULL);		//erreur malloc
+		return (printf("error malloc"), NULL);
 	while (i < data->nb_philo)
 	{
 		philos[i].id = i + 1;
-		philos[i].time_to_die = data->time_to_die;
-		philos[i].time_to_eat = data->time_to_eat;
-		philos[i].time_to_sleep = data->time_to_sleep;
-		philos[i].nb_meal = data->nb_meal;
+		get_input(&philos[i], av);
 		philos[i].philo_died = &(data->philo_died);
-		philos[i].fork = &data->fork[i];
-		if (!i)
-			philos[i].fork_next = &data->fork[data->nb_philo - 1];
+		philos[i].left_fork = &data->forks[i];
+		if (i == 0)
+			philos[i].right_fork = &data->forks[data->nb_philo - 1];
 		else
-			philo[i].fork_next = &data->fork[i - 1];
-		philos[i].write_m = &(data->write_m);
-		philos[i].dead_m = &(data->dead_m);
+			philos[i].right_fork = &data->forks[i - 1];
+		select_fork(&philos[i]);
+		philos[i].write_m = &data->write_m;
+		philos[i].dead_m = &data->dead_m;
+		philos[i].eat_m = &data->eat_m;
 		philos[i].start_time = get_time();
-		philos[i].last_meal = get_time();
-		
-		i++;
+		philos[i++].last_meal = get_time();
 	}
-	return (0);
+	return (philos);
 }
+
 int	init_fork(t_data *data)
 {
 	int	i;	
 
 	data->forks = malloc(data->nb_philo * sizeof (pthread_mutex_t));
 	if (!data->forks)
-		return (1);		//erreur malloc
+		return (1);
 	i = 0;
 	while (i < data->nb_philo)
 	{
-		pthread_mutex_init(&data->fork[i], NULL);
+		pthread_mutex_init(&data->forks[i], NULL);
 		i++;
 	}
 	return (0);
 }
 
-int	init_data(char **arg, t_data *data)
+void	init_data(char **arg, t_data *data)
 {
-
-	data->nb_philo = (int)atol(arg[0]);
-	if (!data->nb_philo)
-		return (1);
-	data->time_to_die = (int)atol(arg[1]);
-	if (!data->time_to_die)
-		return (1);
-	data->time_to_eat = (int)atol(arg[2]);
-	if (!data->time_to_eat)
-		return (1);
-	data->time_to_sleep = (int)atol(arg[3]);
-	if (!data->time_to_sleep)
-		return (1);
-	data->nb_meal = -1;
-	if (arg[4])
-		data->nb_meal = (int)atol(arg[4]);
-	return (0);
+	data->nb_philo = (int)ft_atol(arg[0]);
+	data->philo_died = 0;
+	pthread_mutex_init(&data->dead_m, NULL);
+	pthread_mutex_init(&data->write_m, NULL);
+	pthread_mutex_init(&data->eat_m, NULL);
 }
-

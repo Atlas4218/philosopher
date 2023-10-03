@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = pipex 
+NAME = philosopher 
 
 SRC = src
 INC = inc
@@ -18,11 +18,11 @@ BIN = bin
 LIB = libft
 
 SOURCE = ${SRC}/main.c\
-	 ${SRC}/heredoc.c\
+	 ${SRC}/philos.c\
 	 ${SRC}/utils.c\
-	 ${SRC}/utils_2.c\
-	 ${SRC}/get_next_line.c\
-	 ${SRC}/get_next_line_utils.c
+	 ${SRC}/monitor.c\
+	 ${SRC}/gest_threads.c\
+	 ${SRC}/parsing.c
 
 OBJECT = ${patsubst %,${BIN}/%, ${notdir ${SOURCE:.c=.o}}}
 
@@ -32,20 +32,17 @@ CC = cc
 
 ${BIN}/%.o : ${SRC}/%.c 
 	mkdir -p ${BIN};\
-		${CC} ${CFLAGS} -I${INC} -I${LIB} -c $< -o $@
+		${CC} ${CFLAGS} -I${INC} -c $< -o $@
 
 all:	${NAME}
 
 ${NAME}: ${OBJECT}
-	make -C ${LIB};\
-		${CC} -o ${NAME} ${OBJECT} -L${LIB} -lft -I${LIB};
+		${CC} -o ${NAME} ${OBJECT};
 
 clean:
 	${RM} ${OBJECT};\
-		make -C ${LIB} clean;
 
 fclean:	clean
-	make -C ${LIB} fclean;\
 		${RM} ${NAME}
 
 re:	fclean all
