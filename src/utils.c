@@ -6,7 +6,7 @@
 /*   By: rastie <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 13:29:28 by rastie            #+#    #+#             */
-/*   Updated: 2023/10/03 18:28:59 by rastie           ###   ########.fr       */
+/*   Updated: 2023/10/04 15:23:32 by rastie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -45,16 +45,13 @@ void	clear_all(t_data *data, t_philo *philos)
 {
 	int	i;
 
-	i = 0;
-	while (philos && &philos[i])
-		free(&philos[i++]);
 	if (philos)
 		free(philos);
 	i = 0;
-	while (data->forks && &data->forks[i])
+	while (data->forks && i < data->nb_philo)
 	{
 		pthread_mutex_destroy(&data->forks[i]);
-		free(&data->forks[i++]);
+		i++;
 	}
 	if (data->forks)
 		free(data->forks);

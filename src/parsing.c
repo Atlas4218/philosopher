@@ -6,7 +6,7 @@
 /*   By: rastie <rastie@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/18 17:46:52 by rastie            #+#    #+#             */
-/*   Updated: 2023/10/03 19:49:21 by rastie           ###   ########.fr       */
+/*   Updated: 2023/10/04 14:56:28 by rastie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -25,7 +25,7 @@ void	select_fork(t_philo *philo)
 	}
 }
 
-void	get_input(t_philo *philo, char **av)
+void	get_input(t_philo *philo, int id, char **av)
 {
 	philo->time_to_die = (int)ft_atol(av[1]);
 	philo->time_to_eat = (int)ft_atol(av[2]);
@@ -33,6 +33,7 @@ void	get_input(t_philo *philo, char **av)
 	philo->nb_meal = -1;
 	if (av[4])
 		philo->nb_meal = (int)ft_atol(av[4]);
+	philo->id = id;
 }
 
 t_philo	*init_philos(t_data *data, char **av)
@@ -46,8 +47,7 @@ t_philo	*init_philos(t_data *data, char **av)
 		return (printf("error malloc"), NULL);
 	while (i < data->nb_philo)
 	{
-		philos[i].id = i + 1;
-		get_input(&philos[i], av);
+		get_input(&philos[i], i + 1, av);
 		philos[i].philo_died = &(data->philo_died);
 		philos[i].left_fork = &data->forks[i];
 		if (i == 0)
@@ -59,7 +59,8 @@ t_philo	*init_philos(t_data *data, char **av)
 		philos[i].dead_m = &data->dead_m;
 		philos[i].eat_m = &data->eat_m;
 		philos[i].start_time = get_time();
-		philos[i++].last_meal = get_time();
+		philos[i].last_meal = get_time();
+		philos[i++].eating = 0;
 	}
 	return (philos);
 }

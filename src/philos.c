@@ -6,7 +6,7 @@
 /*   By: rastie <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 14:23:35 by rastie            #+#    #+#             */
-/*   Updated: 2023/10/03 18:53:57 by rastie           ###   ########.fr       */
+/*   Updated: 2023/10/04 13:03:38 by rastie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -33,15 +33,15 @@ void	philo_sleep(t_philo *philo)
 
 void	philo_eat(t_philo *philo)
 {
-	pthread_mutex_lock(philo->fork);
+	pthread_mutex_lock(philo->first_fork);
 	print_state("took the first fork", philo);
-	if (philo->fork == philo->fork_next)
+	if (philo->first_fork == philo->second_fork)
 	{
 		usleep(philo->time_to_die);
-		pthread_mutex_unlock(philo->fork);
+		pthread_mutex_unlock(philo->first_fork);
 		return ;
 	}
-	pthread_mutex_lock(philo->fork_next);
+	pthread_mutex_lock(philo->second_fork);
 	print_state("took the second fork", philo);
 	philo->eating = 1;
 	print_state("is eating", philo);
@@ -52,9 +52,9 @@ void	philo_eat(t_philo *philo)
 	pthread_mutex_unlock(philo->eat_m);
 	ft_usleep(philo->time_to_eat);
 	philo->eating = 0;
-	pthread_mutex_unlock(philo->fork);
-	if (philo->fork != philo->fork_next)
-		pthread_mutex_unlock(philo->fork_next);
+	pthread_mutex_unlock(philo->first_fork);
+	if (philo->first_fork != philo->second_fork)
+		pthread_mutex_unlock(philo->second_fork);
 }
 
 void	*routine(void *pointer)
@@ -62,8 +62,13 @@ void	*routine(void *pointer)
 	t_philo	*philo;
 
 	philo = (t_philo *)pointer;
+	philo->start_time = get_time();
+	philo->last_meal = get_time();
 	if (philo->id % 2)
-		usleep(philo->time_to_eat);
+	{
+		philo_think(philo);
+		ft_usleep(philo->time_to_eat);
+	}
 	while (!dead(philo))
 	{
 		philo_eat(philo);
