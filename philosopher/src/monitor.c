@@ -6,7 +6,7 @@
 /*   By: rastie <rastie@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 16:28:55 by rastie            #+#    #+#             */
-/*   Updated: 2023/10/03 18:14:09 by rastie           ###   ########.fr       */
+/*   Updated: 2023/10/07 17:48:05 by rastie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philo.h"
@@ -14,8 +14,7 @@
 int	philo_dead(t_philo *philo)
 {
 	pthread_mutex_lock(philo->eat_m);
-	if (get_time() - philo->last_meal >= (size_t)philo->time_to_die
-		&& !philo->eating)
+	if (get_time() - philo->last_meal >= (size_t)philo->time_to_die)
 	{
 		pthread_mutex_unlock(philo->eat_m);
 		return (1);
@@ -51,7 +50,7 @@ int	check_if_all_finished(t_philo *philos, t_data *data)
 
 	i = 0;
 	finished = 0;
-	if ((int)philos[0].nb_meal == -1)
+	if (data->nb_meal == -1)
 		return (0);
 	while (i < data->nb_philo)
 	{

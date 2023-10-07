@@ -6,7 +6,7 @@
 /*   By: rastie <rastie@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 15:38:50 by rastie            #+#    #+#             */
-/*   Updated: 2023/10/03 19:49:58 by rastie           ###   ########.fr       */
+/*   Updated: 2023/10/07 17:47:35 by rastie           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PHILO_H
@@ -21,6 +21,7 @@
 typedef struct s_data
 {
 	int				nb_philo;
+	int				nb_meal;
 	int				philo_died;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	dead_m;
@@ -34,7 +35,6 @@ typedef struct s_philo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal;
-	int				eating;
 	int				id;
 	int				*philo_died;
 	size_t			start_time;
@@ -60,7 +60,7 @@ t_philo	*init_philos(t_data *data, char **av);
 void	*routine(void *pointer);
 int		dead(t_philo *philo);
 size_t	get_time(void);
-int		ft_usleep(size_t milliseconds);
+int		ft_usleep(size_t milliseconds, t_philo *philo);
 void	print_state(char *state, t_philo *philo);
 void	clear_all(t_data *data, t_philo *philos);
 long	ft_atol(const char *nptr);
